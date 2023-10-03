@@ -29,11 +29,13 @@ So, I've made a CSV Importer for Google Sheets that lets users drag and drop CSV
 3. Open terminal and type nodemon index2.js
 4. There you goooooo🥳, jugaad web app
 
-![image](https://github.com/StackItHQ/stackit-hiring-assignment-Harsha-7975/assets/73788475/901b9de5-0442-4ff3-9075-4dcaa10ed533)
+![image1](https://github.com/Harsha-7975/CSVImporterToGoogleSheets/assets/73788475/6de38bb0-642c-4a57-88be-ecd722bdf7e9)
+
 
 5. Now drag your .csv file, give your spreadsheetID, range , select the columns which you have to import AND BOOOOOOOOM, 
 
-![image](https://github.com/StackItHQ/stackit-hiring-assignment-Harsha-7975/assets/73788475/50fe4a3b-8d14-434f-aa5c-074ad771c4ed)
+![image2](https://github.com/Harsha-7975/CSVImporterToGoogleSheets/assets/73788475/a9ddd398-7cb9-4e02-b9fc-7d650f580a42)
+
 
 6. Your spreadsheet will be filled with dataaaaaa😎😎😎
 7. Guess what, this app is very much efficient as it can handle ~15MB csv files as well 💪.
