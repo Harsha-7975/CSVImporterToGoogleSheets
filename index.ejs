@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload CSV to Google Sheets</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://img.freepik.com/premium-photo/abstract-background-images-wallpaper-ai-generated_643360-33703.jpg"); /* Specify the path to your background image */
+        background-size: cover; /* Adjust the background size to cover the entire viewport */
+        background-repeat: no-repeat; /* Prevent the background from repeating */
+        background-attachment: fixed; /* Keep the background fixed while scrolling */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column; /* Allow for vertical stacking of elements */
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      /* Style for the heading */
+      .heading {
+        font-size: 36px;
+        color: #fff; /* Text color for the heading */
+        text-align: center;
+        margin: 20px 0; /* Add margin to position the heading */
+      }
+      /* Style for the form */
+      .form-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 60px;
+        border-radius: 8px;
+        text-align: center;
+      }
+      /* Style for input fields and buttons */
+      input[type="text"],
+      button[type="submit"] {
+        margin: 10px;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      /* Style for labels */
+      label {
+        display: block;
+        text-align: left;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      /* Style for the drop zone */
+      .drop-zone {
+        border: 2px dashed #3498db;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+      }
+      /* Style for the drop zone when active */
+      .drop-zone.active {
+        background-color: #3498db;
+        color: #fff;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #2980b9; /* Change the background color on hover */
+        color: #fff; /* Change the text color on hover */
+        cursor: pointer; /* Change the mouse pointer to a hand symbol on hover */
+      }
+
+      #hintButton {
+        font-size: 16px;
+        color: #3498db;
+        cursor: pointer;
+      }
+
+      .tooltip {
+        display: none;
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: fit-content;
+        top: 30px;
+        left: 0;
+        text-align: left;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Heading added at the top of the page -->
+    <!-- <div class="heading">THE PREMIUM CSV IMPORTER TO YOUR GOOGLE SHEETS</div> -->
+
+    <div class="container">
+      <div class="form-container">
+        <h1>Upload a CSV file to Google Sheets</h1>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+          <label for="csvFile" class="custom-file-upload"
+            >Choose a CSV file</label
+          >
+
+          <!-- Add the drop zone for drag-and-drop -->
+          <div class="drop-zone" id="dropZone">
+            <p>Drag and drop a CSV file here or click to select one.</p>
+          </div>
+
+          <input
+            type="file"
+            name="csvFile"
+            id="csvFile"
+            accept=".csv"
+            required
+          />
+
+          <label for="spreadsheetId">Spreadsheet ID</label>
+          <input
+            type="text"
+            name="spreadsheetId"
+            id="spreadsheetId"
+            placeholder="Enter Spreadsheet ID"
+            required
+          />
+
+          <span id="hintButton">Don't know where the ID is?</span>
+          <div id="hintTooltip" class="tooltip">
+            <p>This is where you can find the Spreadsheet ID:</p>
+            <p>Open your Google Sheets document.</p>
+            <p>Look at the URL in your browser's address bar.</p>
+            <p>
+              The Spreadsheet ID is the string between "/d/" and "/edit"
+              "https://docs.google.com/spreadsheets/d/ur id/edit". 
+              For example:
+              If the url of the spreadsheet is
+              "https://docs.google.com/spreadsheets/d/1EZxparyrmt3Qt0LBlip1pEuDOsBo95XmZKb_PDl5pVs/edit#gid=133903294",
+              then the spreadsheet id is
+              "1EZxparyrmt3Qt0LBlip1pEuDOsBo95XmZKb_PDl5pVs"
+            </p>
+          </div>
+
+          <label for="range">Sheet Range</label>
+          <input
+            type="text"
+            name="range"
+            id="range"
+            placeholder="Enter Sheet Range (e.g., Sheet1/Sheet2)"
+            required
+          />
+
+          <div id="columns">
+            <label>Select columns to import:</label>
+            <div id="columnCheckboxes"></div>
+          </div>
+
+          <button type="submit">Upload</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add the script for drag-and-drop functionality -->
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("csvFile");
+
+
+      const hintButton = document.getElementById("hintButton");
+      const hintTooltip = document.getElementById("hintTooltip");
+
+      hintButton.addEventListener("mouseenter", () => {
+        hintTooltip.style.display = "block";
+      });
+
+      hintButton.addEventListener("mouseleave", () => {
+        hintTooltip.style.display = "none";
+      });
+
+      // Prevent the default behavior when a file is dragged over the drop zone
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("active");
+      });
+
+      // Restore the drop zone's style when the file is dragged away
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("active");
+      });
+
+      // Handle file drop
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("active");
+
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          fileInput.files = e.dataTransfer.files;
+          dropZone.querySelector("p").textContent = file.name;
+        }
+      });
+
+      // Handle file selection when clicking the drop zone
+      dropZone.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      // Update the drop zone's text when a file is selected
+      fileInput.addEventListener("change", () => {
+        const selectedFile = fileInput.files[0];
+        if (selectedFile) {
+          // Read the selected CSV file
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const csvContent = e.target.result;
+            const rows = csvContent.split("\n");
+            const columns = rows[0].split(","); // Assuming the first row contains column names
+
+            // Display checkboxes for each column
+            const columnCheckboxes =
+              document.getElementById("columnCheckboxes");
+            columnCheckboxes.innerHTML = "";
+
+            columns.forEach((column, index) => {
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.name = "selectedColumns";
+              checkbox.value = index;
+              checkbox.id = `column${index}`;
+              const label = document.createElement("label");
+              label.htmlFor = `column${index}`;
+              label.textContent = column;
+              columnCheckboxes.appendChild(checkbox);
+              columnCheckboxes.appendChild(label);
+            });
+          };
+
+          reader.readAsText(selectedFile);
+          dropZone.querySelector("p").textContent = selectedFile.name;
+        } else {
+          // Reset the column checkboxes
+          const columnCheckboxes = document.getElementById("columnCheckboxes");
+          columnCheckboxes.innerHTML = "";
+
+          dropZone.querySelector("p").textContent =
+            "Drag and drop a CSV file here or click to select one.";
+        }
+      });
+    </script>
+  </body>
+</html>
