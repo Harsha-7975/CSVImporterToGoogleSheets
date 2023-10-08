@@ -8,7 +8,7 @@ A typical week of an analyst in an e-commerce company 🛒 involves receiving mu
 So, I've made a CSV Importer for Google Sheets that lets users drag and drop CSV files onto the Google Sheet. The moment they drop the CSV file, they can select which columns to import 🗂️.
 
 **Features**:
-- Importing to Sheet – After validation and mapping, data will be populated to chosen google shees, either appending to existing data or creating a new sheet 📥📋.
+- Importing to Sheet – After validation and mapping, data will be populated to chosen google sheets, either appending to existing data or creating a new sheet 📥📋.
 - Optimization for Large Files – Large datasets are common in analytics. This solution will effectively handle large CSV files (~15MB CSV file) without causing performance issues or prolonged waiting times 📈📦.
 
 **Things to be done before running this all-new Jugaad app**:
